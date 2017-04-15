@@ -28,7 +28,7 @@ import com.cpthack.commons.rdclient.config.RedisConfig;
  * @since JDK 1.7
  */
 public interface RedisClient<T> {
-
+	
 	/**
 	 * 
 	 * <b>setRedisConfig </b> <br/>
@@ -41,9 +41,10 @@ public interface RedisClient<T> {
 	 *
 	 */
 	RedisClient<?> setRedisConfig(RedisConfig redisConfig);
-
+	
 	/**
 	 * <b>getJedis </b> <br/>
+	 * <br/>
 	 * 
 	 * 获取redis的操作对象<br/>
 	 * 
@@ -56,68 +57,104 @@ public interface RedisClient<T> {
 	
 	/**
 	 * 
-	  * <b>keys </b> <br/><br/>
-	  * 
-	  *Returns all the keys matching the glob-style pattern as space separated strings. For example 
-	  *if you have in the database the keys "foo" and "foobar" the command "KEYS foo*" will return "foo foobar". <br/>
-	  * 
-	  * @author cpthack cpt@jianzhimao.com
-	  * @param pattern
-	  * @return 
-	  * Set<String>
-	  *
+	 * <b>keys </b> <br/>
+	 * <br/>
+	 * 
+	 * Returns all the keys matching the glob-style pattern as space separated strings. For example
+	 * if you have in the database the keys "foo" and "foobar" the command "KEYS foo*" will return
+	 * "foo foobar". <br/>
+	 * 
+	 * @author cpthack cpt@jianzhimao.com
+	 * @param pattern
+	 * @return Set<String>
+	 *
 	 */
 	Set<String> keys(String pattern);
 	
 	/**
 	 * 
-	  * <b>deleteByPattern </b> <br/>
-	  * 
-	  * <br/>按模式删除多个KEY <br/>
-	  * Delete value When the keys matching the glob-style pattern as space separated strings. For example 
-	  * if you have in the database the keys "foo" and "foobar" the method "deleteByPattern(foo*)" will delete "foo foobar". 
-	  * 
-	  * @author cpthack cpt@jianzhimao.com
-	  * @param patternKey 模式的KEY
-	  * @return 
-	  * Long
-	  *
+	 * <b>按模式删除多个KEY</b> <br/>
+	 * <br/>
+	 * Delete value When the keys matching the glob-style pattern as space separated strings. For
+	 * example if you have in the database the keys "foo" and "foobar" the method
+	 * "deleteByPattern(foo*)" will delete "foo foobar".<br/>
+	 * 
+	 * @author cpthack cpt@jianzhimao.com
+	 * @param patternKey
+	 * @return Long
+	 *
 	 */
 	Long deleteByPattern(String patternKey);
 	
-	
 	/**
 	 * 
-	 * <b>set </b> <br/><br/>
+	 * <b>String字符串写操作</b> <br/>
+	 * <br/>
 	 * 
-	 * Set the string value as value of the key. The string can't be longer than
-	 * 1073741824 bytes (1 GB).<br/>
+	 * Set the string value as value of the key. The string can't be longer than 1073741824 bytes (1
+	 * GB).<br/>
 	 * 
 	 * @author cpthack cpt@jianzhimao.com
-	 * @param key 缓存KEY
-	 * @param value 缓存VALUE（字符串）
+	 * @param key
+	 *            缓存KEY
+	 * @param value
+	 *            缓存VALUE（字符串）
 	 * @return boolean
 	 *
 	 */
 	boolean set(String key, String value);
-
+	
 	/**
 	 * 
-	  * <b>set </b> <br/><br/>
-	  * 
-	  * Set the string value as value of the key. The string can't be longer than
-	  * 1073741824 bytes (1 GB).<br/>
-	  * Moreover,Set the expiredSeconds of the key.<br/>
-	  * 
-	  * @author cpthack cpt@jianzhimao.com
-	  * @param key 缓存KEY
-	  * @param value 缓存VALUE（字符串）
-	  * @param expiredSeconds 多长时间(秒)过期
-	  * @return 
-	  * boolean
-	  *
+	 * <b>String字符串写操作</b> <br/>
+	 * 
+	 * Set the string value as value of the key. The string can't be longer than 1073741824 bytes (1
+	 * GB).<br/>
+	 * Moreover,Set the expiredSeconds of the key.<br/>
+	 * 
+	 * @author cpthack cpt@jianzhimao.com
+	 * @param key
+	 *            缓存KEY
+	 * @param value
+	 *            缓存VALUE（字符串）
+	 * @param expiredSeconds
+	 *            多长时间(秒)过期
+	 * @return boolean
+	 *
 	 */
 	boolean set(String key, String value, int expiredSeconds);
 	
-
+	/**
+	 * 
+	 * <b>String字符串读操作</b> <br/>
+	 * <br/>
+	 * 
+	 * Get the value of the specified key. If the key does not exist null is returned. If the value
+	 * stored at key is not a string an error is returned because GET can only handle string values. <br/>
+	 * 
+	 * @author cpthack cpt@jianzhimao.com
+	 * @param key
+	 * @return String
+	 *
+	 */
+	String get(String key);
+	
+	/**
+	 * 
+	 * <b>setnx </b> <br/>
+	 * <br/>
+	 * 
+	 * SETNX works exactly like SET with the only difference that if the key already exists no
+	 * operation is performed. SETNX actually means "SET if Not eXists". <br/>
+	 * <br/>
+	 * 1 if the key was set 0 if the key was not set
+	 * 
+	 * @author cpthack cpt@jianzhimao.com
+	 * @param key
+	 * @param value
+	 *            void
+	 *
+	 */
+	void setnx(String key, String value, int expiredSeconds);
+	
 }

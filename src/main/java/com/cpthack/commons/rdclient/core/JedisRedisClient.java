@@ -28,24 +28,29 @@ import com.cpthack.commons.rdclient.exception.AssertHelper;
 import com.cpthack.commons.rdclient.exception.RedisClientException;
 
 /**
- * <b>JedisRedisClient.java</b></br> TODO(这里用一句话描述这个类的作用)</br>
+ * 
+ * <b>JedisRedisClient.java</b></br>
+ * 
+ * <pre>
+ * TODO(这里用一句话描述这个类的作用)
+ * </pre>
  *
  * @author cpthack cpt@jianzhimao.com
- * @date 2017年4月12日 下午2:50:39
+ * @date 2017年4月15日 下午12:04:27
  * @since JDK 1.7
  */
 public class JedisRedisClient implements RedisClient<Jedis> {
-
-	private static Logger logger = LoggerFactory
-			.getLogger(JedisRedisClient.class);
-	private RedisConfig redisConfig = null;
-
+	
+	private static Logger logger      = LoggerFactory
+	                                          .getLogger(JedisRedisClient.class);
+	private RedisConfig   redisConfig = null;
+	
 	@Override
 	public RedisClient<Jedis> setRedisConfig(RedisConfig redisConfig) {
 		this.redisConfig = redisConfig;
 		return this;
 	}
-
+	
 	@Override
 	public Jedis getJedis() {
 		if (null == redisConfig) {
@@ -53,7 +58,6 @@ public class JedisRedisClient implements RedisClient<Jedis> {
 		}
 		return JedisPoolFactory.getClient(redisConfig);
 	}
-	
 	
 	@Override
 	public Set<String> keys(String pattern) {
@@ -63,15 +67,17 @@ public class JedisRedisClient implements RedisClient<Jedis> {
 		Set<String> set = null;
 		try {
 			set = jedis.keys(pattern);
-		} catch (Exception e) {
+		}
+		catch (Exception e) {
 			logger.warn("Read redis in error:" + e);
 			throw new RedisClientException(e);
-		} finally {
+		}
+		finally {
 			release(jedis);
 		}
 		return set;
 	}
-
+	
 	@Override
 	public Long deleteByPattern(String pattern) {
 		Long count = 0L;
@@ -85,15 +91,16 @@ public class JedisRedisClient implements RedisClient<Jedis> {
 					count += jedis.del(k);
 				}
 			}
-		} catch (Exception e) {
+		}
+		catch (Exception e) {
 			logger.warn("Delete redis pattern keys in error:" + e);
 			throw new RedisClientException(e);
-		} finally {
+		}
+		finally {
 			release(jedis);
 		}
 		return count;
 	}
-	
 	
 	@Override
 	public boolean set(String key, String value) {
@@ -102,17 +109,20 @@ public class JedisRedisClient implements RedisClient<Jedis> {
 		try {
 			key = jedis.set(key, value);
 			return "OK".equalsIgnoreCase(key);
-		} catch (Exception e) {
+		}
+		catch (Exception e) {
 			logger.error("Write String Value To Redis Error:" + e);
 			throw new RedisClientException(e);
-		}finally{
+		}
+		finally {
 			release(jedis);
 		}
 	}
 	
 	@Override
 	public boolean set(String key, String value, int expiredSeconds) {
-		AssertHelper.isTrue(expiredSeconds<=0, "The expiredSeconds is not less then 0 .");
+		AssertHelper.isTrue(expiredSeconds <= 0,
+		        "The expiredSeconds is not less then 0 .");
 		Jedis jedis = getJedis();
 		AssertHelper.notNull(jedis, "The Jedis Object is Not Null .");
 		try {
@@ -121,25 +131,65 @@ public class JedisRedisClient implements RedisClient<Jedis> {
 			ts.expire(key, expiredSeconds);
 			ts.exec();
 			return true;
-		} catch (Exception e) {
+		}
+		catch (Exception e) {
 			logger.error("Write String Value To Redis Error:" + e);
 			throw new RedisClientException(e);
-		}finally{
+		}
+		finally {
 			release(jedis);
 		}
 	}
 	
+	@Override
+	public String get(String key) {
+		Jedis jedis = getJedis();
+		AssertHelper.notNull(jedis, "The Jedis Object is Not Null .");
+		String value = null;
+		try {
+			value = jedis.get(key);
+		}
+		catch (Exception e) {
+			logger.warn("Read redis in error:" + e);
+			throw new RedisClientException(e);
+		}
+		finally {
+			release(jedis);
+		}
+		return value;
+	}
+	
+	@Override
+	public void setnx(String key, String value, int expiredSeconds) {
+		AssertHelper.isTrue(expiredSeconds <= 0,
+		        "The expiredSeconds is not less then 0 .");
+		Jedis jedis = getJedis();
+		AssertHelper.notNull(jedis, "The Jedis Object is Not allow null .");
+		try {
+			Transaction ts = jedis.multi();
+			ts.setnx(key, value);
+			ts.expire(key, expiredSeconds);
+			ts.exec();
+		}
+		catch (Exception e) {
+			logger.error("Write String Value To Redis Error:" + e);
+			throw new RedisClientException(e);
+		}
+		finally {
+			release(jedis);
+		}
+	}
 	
 	/**
 	 * 
-	  * <b>release </b> <br/>
-	  * 
-	  * 释放jedis资源<br/>
-	  * 
-	  * @author cpthack cpt@jianzhimao.com
-	  * @param jedis 
-	  * void
-	  *
+	 * <b>release </b> <br/>
+	 * 
+	 * 释放jedis资源<br/>
+	 * 
+	 * @author cpthack cpt@jianzhimao.com
+	 * @param jedis
+	 *            void
+	 *
 	 */
 	protected void release(Jedis jedis) {
 		if (jedis == null) {
@@ -147,7 +197,8 @@ public class JedisRedisClient implements RedisClient<Jedis> {
 		}
 		try {
 			jedis.close();
-		} catch (Exception e) {
+		}
+		catch (Exception e) {
 			logger.error("Release jedis Error: " + e);
 			throw new RedisClientException(e);
 		}

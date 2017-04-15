@@ -29,27 +29,32 @@ import redis.clients.jedis.JedisPoolConfig;
 import com.cpthack.commons.rdclient.config.RedisConfig;
 
 /**
- * <b>JedisPoolFactory.java</b></br> TODO(这里用一句话描述这个类的作用)</br>
+ * 
+ * <b>JedisPoolFactory.java</b></br>
+ * 
+ * <pre>
+ * TODO(这里用一句话描述这个类的作用)
+ * </pre>
  *
  * @author cpthack cpt@jianzhimao.com
- * @date 2017年4月12日 下午2:25:02
+ * @date 2017年4月15日 下午12:04:35
  * @since JDK 1.7
  */
 public class JedisPoolFactory {
-	private static Logger logger = LoggerFactory
-			.getLogger(JedisPoolFactory.class);
-	private static RedisConfig configDefault = new RedisConfig();
+	private static Logger                 logger        = LoggerFactory
+	                                                            .getLogger(JedisPoolFactory.class);
+	private static RedisConfig            configDefault = new RedisConfig();
 	private static Map<String, JedisPool> mapConfigPool = new ConcurrentHashMap<String, JedisPool>();
-
+	
 	// 禁止实例化
 	private JedisPoolFactory() {
 	}
-
+	
 	private static JedisPool getConfigPool(String key) {
 		JedisPool pool = mapConfigPool.get(key);
 		return pool;
 	}
-
+	
 	private synchronized static boolean initConfigPool(RedisConfig config) {
 		if (config == null) {
 			return false;
@@ -77,10 +82,11 @@ public class JedisPoolFactory {
 		poolConfig.setMaxWaitMillis(config.getTryTimeout());
 		poolConfig.setTestOnBorrow(config.getTestOnBorrow());
 		int timeout = config.getTryTimeout();// msec
-
+		
 		if (isAuth) {
 			jedisPool = new JedisPool(poolConfig, server, port, timeout, auth);
-		} else {
+		}
+		else {
 			jedisPool = new JedisPool(poolConfig, server, port, timeout);
 		}
 		if (jedisPool != null) {
@@ -88,12 +94,12 @@ public class JedisPoolFactory {
 		}
 		return jedisPool != null;
 	}
-
+	
 	// 获取默认的Redis连接
 	public static Jedis getClient() {
 		return getClient(configDefault);
 	}
-
+	
 	// 获取指定配置的Redis连接
 	public static Jedis getClient(RedisConfig config) {
 		if (config == null) {
@@ -111,8 +117,9 @@ public class JedisPoolFactory {
 		Jedis jedis = null;
 		try {
 			jedis = jedisPool.getResource();
-		} catch (Exception e) {
-			logger.warn("", e);
+		}
+		catch (Exception e) {
+			logger.warn("获取指定配置的redis连接失败，Error:", e);
 		}
 		if (jedis == null) {
 			logger.warn("Cannot get Jedis object from the pool!");
