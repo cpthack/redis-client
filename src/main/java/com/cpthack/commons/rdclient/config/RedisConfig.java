@@ -15,6 +15,8 @@
  */
 package com.cpthack.commons.rdclient.config;
 
+import com.cpthack.commons.rdclient.constants.RedisConstants;
+
 /**
  * <b>RedisConfig.java</b></br>
  * 
@@ -28,15 +30,16 @@ package com.cpthack.commons.rdclient.config;
  */
 public class RedisConfig extends AbstractConfig {
 	
-	private static final String FILE_NAME                = "redis_config.properties";
-	private static final String CONFIG_NAME_SERVER_IP    = "redis.server.ip";
-	private static final String CONFIG_NAME_SERVER_PORT  = "redis.server.port";
-	private static final String CONFIG_NAME_SERVER_PWD   = "redis.server.password";
+	private final String FILE_NAME                = RedisConstants.DEFALUT_REDIS_FILE_NAME;
 	
-	private static final String CONFIG_NAME_POOL_MAX     = "redis.client.pool.max";
-	private static final String CONFIG_NAME_POOL_IDLE    = "redis.client.pool.idle";
-	private static final String CONFIG_NAME_TESTONBORROW = "redis.client.pool.TestOnBorrow";
-	private static final String CONFIG_NAME_TRY_TIMEOUT  = "redis.client.pool.try.timeout";
+	private final String CONFIG_NAME_SERVER_IP    = "redis.server.ip";
+	private final String CONFIG_NAME_SERVER_PORT  = "redis.server.port";
+	private final String CONFIG_NAME_SERVER_PWD   = "redis.server.password";
+	
+	private final String CONFIG_NAME_POOL_MAX     = "redis.client.pool.max";
+	private final String CONFIG_NAME_POOL_IDLE    = "redis.client.pool.idle";
+	private final String CONFIG_NAME_TESTONBORROW = "redis.client.pool.TestOnBorrow";
+	private final String CONFIG_NAME_TRY_TIMEOUT  = "redis.client.pool.try.timeout";
 	
 	public RedisConfig() {
 		reloadConfig();
@@ -52,7 +55,7 @@ public class RedisConfig extends AbstractConfig {
 	}
 	
 	public int getServerPort() {
-		return getPropertyToInt(CONFIG_NAME_SERVER_PORT, 6379);
+		return getPropertyToInt(CONFIG_NAME_SERVER_PORT, RedisConstants.DEFAULT_REDIS_PORT);
 	}
 	
 	public String getServerAuth() {
@@ -60,11 +63,11 @@ public class RedisConfig extends AbstractConfig {
 	}
 	
 	public int getPoolMax() {
-		return getPropertyToInt(CONFIG_NAME_POOL_MAX, 10);
+		return getPropertyToInt(CONFIG_NAME_POOL_MAX, RedisConstants.DEFAULT_REDIS_POOL_MAX);
 	}
 	
 	public int getPoolIdle() {
-		return getPropertyToInt(CONFIG_NAME_POOL_IDLE, 1);
+		return getPropertyToInt(CONFIG_NAME_POOL_IDLE, RedisConstants.DEFAULT_REDIS_POOL_IDLE);
 	}
 	
 	public boolean getTestOnBorrow() {

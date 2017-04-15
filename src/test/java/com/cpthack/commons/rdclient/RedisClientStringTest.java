@@ -22,8 +22,8 @@ import org.slf4j.LoggerFactory;
 
 import redis.clients.jedis.Jedis;
 
-import com.cpthack.commons.rdclient.core.JedisRedisClient;
 import com.cpthack.commons.rdclient.core.RedisClient;
+import com.cpthack.commons.rdclient.core.RedisClientFactory;
 
 /**
  * <b>RedisClientStringTest.java</b></br>
@@ -42,10 +42,10 @@ public class RedisClientStringTest {
 	public static void main(String[] args) {
 		
 		logger.info("生成默认RedisConfig配置的RedisClient对象.");
-		RedisClient redisClient = new JedisRedisClient().setRedisConfig(null);
+		RedisClient redisClient = RedisClientFactory.getClient();
 		
 		logger.info("生成自定义RedisConfig配置的RedisClient对象.");
-		redisClient = new JedisRedisClient().setRedisConfig(new TestRedisConfig());
+		redisClient = RedisClientFactory.getClient(new TestRedisConfig());
 		
 		logger.info("获取到Jedis对象，方便developers自定义扩展redis的其他操作");
 		Jedis jedis = (Jedis) redisClient.getJedis();
