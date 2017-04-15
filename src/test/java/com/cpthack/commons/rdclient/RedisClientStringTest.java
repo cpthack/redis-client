@@ -26,7 +26,7 @@ import com.cpthack.commons.rdclient.core.JedisRedisClient;
 import com.cpthack.commons.rdclient.core.RedisClient;
 
 /**
- * <b>RedisClientTest.java</b></br>
+ * <b>RedisClientStringTest.java</b></br>
  * 
  * <pre>
  * TODO(这里用一句话描述这个类的作用)
@@ -36,8 +36,8 @@ import com.cpthack.commons.rdclient.core.RedisClient;
  * @date 2017年4月14日 下午5:57:40
  * @since JDK 1.7
  */
-public class RedisClientTest {
-	private static Logger logger = LoggerFactory.getLogger(RedisClientTest.class);
+public class RedisClientStringTest {
+	private static Logger logger = LoggerFactory.getLogger(RedisClientStringTest.class);
 	
 	public static void main(String[] args) {
 		
@@ -63,6 +63,10 @@ public class RedisClientTest {
 		for (String key : keySet) {
 			logger.info("遍历redis中的key，目前查询到有>>>>>KEY = [" + key + "]");
 		}
+		
+		logger.info("删除所有模式匹配[t*]的KEY,总共删除COUNT=[" + redisClient.deleteByPattern("t*") + "]");
+		keySet = redisClient.keys("t*");
+		logger.info("目前还剩符合模式匹配[t*]的KEY，总共有COUNT=[" + keySet.size() + "]");
 		
 	}
 	
