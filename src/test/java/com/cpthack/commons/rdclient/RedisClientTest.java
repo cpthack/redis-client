@@ -44,6 +44,9 @@ public class RedisClientTest {
 		logger.info("生成默认RedisConfig配置的RedisClient对象.");
 		RedisClient redisClient = new JedisRedisClient().setRedisConfig(null);
 		
+		logger.info("生成自定义RedisConfig配置的RedisClient对象.");
+		redisClient = new JedisRedisClient().setRedisConfig(new TestRedisConfig());
+		
 		logger.info("获取到Jedis对象，方便developers自定义扩展redis的其他操作");
 		Jedis jedis = (Jedis) redisClient.getJedis();
 		jedis.close();
