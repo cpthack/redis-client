@@ -14,18 +14,53 @@
  * limitations under the License.
  */
 package com.cpthack.commons.rdclient;
-/** 
+
+import java.util.Set;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import redis.clients.jedis.Jedis;
+
+import com.cpthack.commons.rdclient.core.JedisRedisClient;
+import com.cpthack.commons.rdclient.core.RedisClient;
+
+/**
  * <b>RedisClientTest.java</b></br>
- * TODO(这里用一句话描述这个类的作用)</br>
+ * 
+ * <pre>
+ * TODO(这里用一句话描述这个类的作用)
+ * </pre>
  *
- * @author cpthack cpt@jianzhimao.com 
- * @date 2017年4月14日 下午5:57:40 
+ * @author cpthack cpt@jianzhimao.com
+ * @date 2017年4月14日 下午5:57:40
  * @since JDK 1.7
  */
 public class RedisClientTest {
-
+	private static Logger logger = LoggerFactory.getLogger(RedisClientTest.class);
+	
 	public static void main(String[] args) {
 		
+		logger.info("生成默认RedisConfig配置的RedisClient对象.");
+		RedisClient redisClient = new JedisRedisClient().setRedisConfig(null);
+		
+		logger.info("获取到Jedis对象，方便developers自定义扩展redis的其他操作");
+		Jedis jedis = (Jedis) redisClient.getJedis();
+		jedis.close();
+		
+		logger.info("Redis Set 字符串英文值");
+		redisClient.set("test1", "my name is cpthack .");
+		
+		logger.info("Redis Set 字符串中文值");
+		redisClient.set("test2", "我叫成佩涛 .");
+		
+		logger.info("获取 KEY = [test] 的值 VALUE = [" + redisClient.get("test") + "]");
+		
+		Set<String> keySet = redisClient.keys("t*");
+		for (String key : keySet) {
+			logger.info("遍历redis中的key，目前查询到有>>>>>KEY = [" + key + "]");
+		}
+		
 	}
-
+	
 }
