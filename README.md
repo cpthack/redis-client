@@ -153,4 +153,3 @@
 * 发布订阅-消息订阅者测试类：[RedisClientSubTest.java](https://github.com/cpthack/redis-client/blob/master/src/test/java/com/cpthack/commons/rdclient/RedisClientSubTest.java)
 
 * 发布订阅-消息发布者测试类：[RedisClientPubTest.java](https://github.com/cpthack/redis-client/blob/master/src/test/java/com/cpthack/commons/rdclient/RedisClientPubTest.java)
-
