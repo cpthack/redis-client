@@ -18,6 +18,7 @@ package com.cpthack.commons.rdclient.core;
 import java.util.Set;
 
 import com.cpthack.commons.rdclient.config.RedisConfig;
+import com.cpthack.commons.rdclient.event.RedisListener;
 
 /**
  * <b>RedisClient.java</b></br> TODO(这里用一句话描述这个类的作用)</br>
@@ -157,4 +158,33 @@ public interface RedisClient<T> {
 	 */
 	void setnx(String key, String value, int expiredSeconds);
 	
+	/**
+	 * 
+	 * <b>发布订阅</b> <br/>
+	 * <br/>
+	 * 
+	 * 消息订阅<br/>
+	 * 
+	 * @author cpthack cpt@jianzhimao.com
+	 * @param channel
+	 * @param redisListener
+	 * @return boolean
+	 *
+	 */
+	boolean subscribe(String channel, RedisListener redisListener);
+	
+	/**
+	 * 
+	 * <b>发布订阅</b> <br/>
+	 * <br/>
+	 * 
+	 * 消息发送<br/>
+	 * 
+	 * @author cpthack cpt@jianzhimao.com
+	 * @param channel
+	 * @param message
+	 *            void
+	 *
+	 */
+	void publish(String channel, String message);
 }

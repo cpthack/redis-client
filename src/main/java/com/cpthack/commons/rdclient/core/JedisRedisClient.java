@@ -15,7 +15,9 @@
  */
 package com.cpthack.commons.rdclient.core;
 
+import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,6 +26,8 @@ import redis.clients.jedis.Jedis;
 import redis.clients.jedis.Transaction;
 
 import com.cpthack.commons.rdclient.config.RedisConfig;
+import com.cpthack.commons.rdclient.event.RedisListener;
+import com.cpthack.commons.rdclient.event.RedisMsgPubSubListener;
 import com.cpthack.commons.rdclient.exception.AssertHelper;
 import com.cpthack.commons.rdclient.exception.RedisClientException;
 
@@ -41,9 +45,10 @@ import com.cpthack.commons.rdclient.exception.RedisClientException;
  */
 public class JedisRedisClient implements RedisClient<Jedis> {
 	
-	private static Logger logger      = LoggerFactory
-	                                          .getLogger(JedisRedisClient.class);
-	private RedisConfig   redisConfig = null;
+	private static Logger                             logger                    = LoggerFactory
+	                                                                                    .getLogger(JedisRedisClient.class);
+	private RedisConfig                               redisConfig               = null;
+	private final Map<String, RedisMsgPubSubListener> redisMsgPubSubListenerMap = new ConcurrentHashMap<String, RedisMsgPubSubListener>();
 	
 	@Override
 	public RedisClient<Jedis> setRedisConfig(RedisConfig redisConfig) {
@@ -173,6 +178,51 @@ public class JedisRedisClient implements RedisClient<Jedis> {
 		}
 		catch (Exception e) {
 			logger.error("Write String Value To Redis Error:" + e);
+			throw new RedisClientException(e);
+		}
+		finally {
+			release(jedis);
+		}
+	}
+	
+	@Override
+	public boolean subscribe(String channel, RedisListener redisListener) {
+		Jedis jedis = getJedis();
+		AssertHelper.notNull(jedis, "The Jedis Object is Not allow null .");
+		
+		RedisMsgPubSubListener redisMsgPubSubListener = redisMsgPubSubListenerMap.get(channel);
+		
+		if (redisMsgPubSubListener == null) {
+			redisMsgPubSubListener = new RedisMsgPubSubListener(channel);
+			
+			try {
+				redisMsgPubSubListener.startRedisMsgPubSubListener(jedis, redisMsgPubSubListener);
+				redisMsgPubSubListenerMap.put(channel, redisMsgPubSubListener);
+			}
+			catch (Exception e) {
+				logger.error("The Redis subscribe Error:" + e);
+				throw new RedisClientException(e);
+			}
+			finally {
+				release(jedis);
+			}
+			
+		}
+		
+		// 添加发布订阅-自定义监听器
+		redisMsgPubSubListener.addRedisListener(redisListener);
+		return true;
+	}
+	
+	@Override
+	public void publish(String channel, String message) {
+		Jedis jedis = getJedis();
+		AssertHelper.notNull(jedis, "The Jedis Object is Not Null .");
+		try {
+			jedis.publish(channel, message);
+		}
+		catch (Exception e) {
+			logger.error("The Redis publish message Error:" + e);
 			throw new RedisClientException(e);
 		}
 		finally {
