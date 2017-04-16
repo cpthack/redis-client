@@ -28,7 +28,7 @@ import com.cpthack.commons.rdclient.constants.RedisConstants;
  * <b>RedisClientFactory.java</b></br>
  * 
  * <pre>
- * TODO(这里用一句话描述这个类的作用)
+ * RedisClient对象生成工厂类
  * </pre>
  *
  * @author cpthack cpt@jianzhimao.com

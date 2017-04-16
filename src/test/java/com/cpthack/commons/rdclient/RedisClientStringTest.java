@@ -29,7 +29,7 @@ import com.cpthack.commons.rdclient.core.RedisClientFactory;
  * <b>RedisClientStringTest.java</b></br>
  * 
  * <pre>
- * TODO(这里用一句话描述这个类的作用)
+ * redis字符串读写操作测试类
  * </pre>
  *
  * @author cpthack cpt@jianzhimao.com

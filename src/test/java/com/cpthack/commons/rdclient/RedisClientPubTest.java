@@ -25,7 +25,7 @@ import com.cpthack.commons.rdclient.core.RedisClientFactory;
  * <b>RedisClientPubTest.java</b></br>
  * 
  * <pre>
- * TODO(这里用一句话描述这个类的作用)
+ * redis发布订阅 - 发布者测试类
  * </pre>
  *
  * @author cpthack cpt@jianzhimao.com
