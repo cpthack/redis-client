@@ -15,11 +15,13 @@
  */
 package com.cpthack.commons.rdclient.core;
 
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 import com.cpthack.commons.rdclient.config.RedisConfig;
 import com.cpthack.commons.rdclient.event.RedisListener;
+import com.cpthack.commons.rdclient.queue.IAtom;
 
 /**
  * <b>RedisClient.java</b></br>
@@ -231,6 +233,152 @@ public interface RedisClient<T> {
 	 *
 	 */
 	String hget(String key, String hashKey);
+	
+	/**
+	 * 
+	 * <b>List写操作</b> <br/>
+	 * <br/>
+	 * 
+	 * Add the string value to the head (LPUSH) or tail (RPUSH) of the list stored at key. If the
+	 * key does not exist an empty list is created just before the append operation. If the key
+	 * exists but is not a List an error is returned. <br/>
+	 * 
+	 * @author cpthack cpt@jianzhimao.com
+	 * @param key
+	 * @param values
+	 * @return boolean
+	 *
+	 */
+	boolean lpush(String key, String... values);
+	
+	/**
+	 * 
+	 * <b>List写操作（先进先出，可用于队列）</b> <br/>
+	 * <br/>
+	 * 
+	 * Add the string value to the head (LPUSH) or tail (RPUSH) of the list stored at key. If the
+	 * key does not exist an empty list is created just before the append operation. If the key
+	 * exists but is not a List an error is returned. <br/>
+	 * 
+	 * @author cpthack cpt@jianzhimao.com
+	 * @param key
+	 * @param expiredSeconds
+	 * @param values
+	 * @return boolean
+	 *
+	 */
+	boolean lpush(String key, int expiredSeconds, String... values);
+	
+	/**
+	 * 
+	 * <b>List写操作</b> <br/>
+	 * <br/>
+	 * 
+	 * Add the string value to the head (LPUSH) or tail (RPUSH) of the list stored at key. If the
+	 * key does not exist an empty list is created just before the append operation. If the key
+	 * exists but is not a List an error is returned. <br/>
+	 * 
+	 * @author cpthack cpt@jianzhimao.com
+	 * @param key
+	 * @param values
+	 * @return boolean
+	 *
+	 */
+	boolean rpush(String key, String... values);
+	
+	/**
+	 * 
+	 * <b>List写操作</b> <br/>
+	 * <br/>
+	 * 
+	 * Add the string value to the head (LPUSH) or tail (RPUSH) of the list stored at key. If the
+	 * key does not exist an empty list is created just before the append operation. If the key
+	 * exists but is not a List an error is returned. <br/>
+	 * 
+	 * @author cpthack cpt@jianzhimao.com
+	 * @param key
+	 * @param expiredSeconds
+	 * @param values
+	 * @return boolean
+	 *
+	 */
+	boolean rpush(String key, int expiredSeconds, String... values);
+	
+	/**
+	 * 
+	 * <b>List读操作（先进后出读取-类似栈）</b> <br/>
+	 * <br/>
+	 * 
+	 * Atomically return and remove the first (LPOP) or last (RPOP) element of the list. For example
+	 * if the list contains the elements "a","b","c" LPOP will return "a" and the list will become
+	 * "b","c".<br/>
+	 * <br/>
+	 * 
+	 * If the key does not exist or the list is already empty the special value 'nil' is returned.
+	 * 
+	 * @author cpthack cpt@jianzhimao.com
+	 * @param key
+	 * @return String
+	 *
+	 */
+	String lpop(String key);
+	
+	/**
+	 * 
+	 * <b>List读操作（先进先出读取-类似队列）</b> <br/>
+	 * <br/>
+	 * 
+	 * Atomically return and remove the first (LPOP) or last (RPOP) element of the list. For example
+	 * if the list contains the elements "a","b","c" RPOP will return "c" and the list will become
+	 * "a","b". <br/>
+	 * <br/>
+	 * 
+	 * If the key does not exist or the list is already empty the special value 'nil' is returned. <br/>
+	 * 
+	 * @author cpthack cpt@jianzhimao.com
+	 * @param key
+	 * @return String
+	 *
+	 */
+	String rpop(String key);
+	
+	/**
+	 * 
+	 * <b>List读操作(保证绝对的事务性)</b> <br/>
+	 * <br/>
+	 * 
+	 * 先进先出 OR 先进后出 取决于数据打入时采用的是lpush OR rpush <br/>
+	 * 
+	 * @author cpthack cpt@jianzhimao.com
+	 * @param key
+	 * @param atom
+	 * @return String
+	 *
+	 */
+	String popQueue(String key, IAtom atom);
+	
+	/**
+	 * 
+	 * <b>List读操作</b> <br/>
+	 * <br/>
+	 * 
+	 * Return the specified elements of the list stored at the specified key. Start and end are
+	 * zero-based indexes. 0 is the first element of the list (the list head), 1 the next element
+	 * and so on.
+	 * 
+	 * For example LRANGE foobar 0 2 will return the first three elements of the list.
+	 * 
+	 * start and end can also be negative numbers indicating offsets from the end of the list. For
+	 * example -1 is the last element of the list, -2 the penultimate element and so on. <br/>
+	 * 
+	 * @author cpthack cpt@jianzhimao.com
+	 * @param key
+	 * @param start
+	 * @param end
+	 * @return List<String>
+	 *
+	 */
+	List<String> lrange(String key, long start, long end);
 	
 	/**
 	 * 

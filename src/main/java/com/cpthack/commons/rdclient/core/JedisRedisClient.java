@@ -15,6 +15,7 @@
  */
 package com.cpthack.commons.rdclient.core;
 
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
@@ -26,10 +27,12 @@ import redis.clients.jedis.Jedis;
 import redis.clients.jedis.Transaction;
 
 import com.cpthack.commons.rdclient.config.RedisConfig;
+import com.cpthack.commons.rdclient.constants.RedisConstants;
 import com.cpthack.commons.rdclient.event.RedisListener;
 import com.cpthack.commons.rdclient.event.RedisMsgPubSubListener;
 import com.cpthack.commons.rdclient.exception.AssertHelper;
 import com.cpthack.commons.rdclient.exception.RedisClientException;
+import com.cpthack.commons.rdclient.queue.IAtom;
 
 /**
  * 
@@ -253,6 +256,170 @@ public class JedisRedisClient implements RedisClient<Jedis> {
 	}
 	
 	@Override
+	public boolean lpush(String key, String... values) {
+		Jedis jedis = getJedis();
+		AssertHelper.notNull(jedis, "The Jedis Object is Not Null .");
+		try {
+			long result = jedis.lpush(key, values);
+			return result > 0;
+		}
+		catch (Exception e) {
+			logger.error("Write List Value To Redis Error:", e);
+			throw new RedisClientException(e);
+		}
+		finally {
+			release(jedis);
+		}
+	}
+	
+	@Override
+	public boolean lpush(String key, int expiredSeconds, String... values) {
+		AssertHelper.isTrue(expiredSeconds > 0,
+		        "The expiredSeconds is not less then 0 .");
+		Jedis jedis = getJedis();
+		AssertHelper.notNull(jedis, "The Jedis Object is Not allow null .");
+		try {
+			Transaction ts = jedis.multi();
+			ts.lpush(key, values);
+			ts.expire(key, expiredSeconds);
+			long result = (long) ts.execGetResponse().get(0).get();// 提交事务并返回"ts.setnx(key,value)"的执行结果
+			return result > 0;
+		}
+		catch (Exception e) {
+			logger.error("Write List Value To Redis Error:", e);
+			throw new RedisClientException(e);
+		}
+		finally {
+			release(jedis);
+		}
+	}
+	
+	@Override
+	public boolean rpush(String key, String... values) {
+		Jedis jedis = getJedis();
+		AssertHelper.notNull(jedis, "The Jedis Object is Not Null .");
+		try {
+			long result = jedis.rpush(key, values);
+			return result > 0;
+		}
+		catch (Exception e) {
+			logger.error("Write List Value To Redis Error:", e);
+			throw new RedisClientException(e);
+		}
+		finally {
+			release(jedis);
+		}
+	}
+	
+	@Override
+	public boolean rpush(String key, int expiredSeconds, String... values) {
+		AssertHelper.isTrue(expiredSeconds > 0,
+		        "The expiredSeconds is not less then 0 .");
+		Jedis jedis = getJedis();
+		AssertHelper.notNull(jedis, "The Jedis Object is Not allow null .");
+		try {
+			Transaction ts = jedis.multi();
+			ts.rpush(key, values);
+			ts.expire(key, expiredSeconds);
+			long result = (long) ts.execGetResponse().get(0).get();// 提交事务并返回"ts.setnx(key,value)"的执行结果
+			return result > 0;
+		}
+		catch (Exception e) {
+			logger.error("Write List Value To Redis Error:", e);
+			throw new RedisClientException(e);
+		}
+		finally {
+			release(jedis);
+		}
+	}
+	
+	@Override
+	public String lpop(String key) {
+		Jedis jedis = getJedis();
+		AssertHelper.notNull(jedis, "The Jedis Object is Not Null .");
+		try {
+			return jedis.lpop(key);
+		}
+		catch (Exception e) {
+			logger.error("Lpop value from list Error:", e);
+			throw new RedisClientException(e);
+		}
+		finally {
+			release(jedis);
+		}
+	}
+	
+	@Override
+	public String rpop(String key) {
+		Jedis jedis = getJedis();
+		AssertHelper.notNull(jedis, "The Jedis Object is Not Null .");
+		try {
+			return jedis.rpop(key);
+		}
+		catch (Exception e) {
+			logger.error("Rpop value from list Error:", e);
+			throw new RedisClientException(e);
+		}
+		finally {
+			release(jedis);
+		}
+	}
+	
+	@Override
+	public String popQueue(String key, IAtom atom) {
+		Jedis jedis = getJedis();
+		AssertHelper.notNull(jedis, "The Jedis Object is Not allow null .");
+		
+		String dstkey = RedisConstants.DEFAULT_REDIS_TEMP_QUEUE_TIMEP_NAME + "-" + key;
+		
+		try {
+			
+			// 事务1，从临时队列中取出数据消费
+			Transaction ts = jedis.multi();
+			ts.rpoplpush(dstkey, dstkey);
+			String result = (String) ts.execGetResponse().get(0).get();
+			
+			// 事务2，从临时队列中消费数据
+			ts = jedis.multi();
+			ts.rpop(dstkey);
+			if (atom.run(result)) {
+				ts.exec();
+			}
+			
+			// 事务3，当临时队列为空时，从目标队列中取出数据到临时队列中，以供下次使用
+			if (result == null) {
+				ts = jedis.multi();
+				ts.rpoplpush(key, dstkey);
+				result = (String) ts.execGetResponse().get(0).get();
+			}
+			return result;
+		}
+		catch (Exception e) {
+			logger.error("Execute lpopQueue in Redis Error:", e);
+			throw new RedisClientException(e);
+		}
+		finally {
+			release(jedis);
+		}
+	}
+	
+	@Override
+	public List<String> lrange(String key, long start, long end) {
+		Jedis jedis = getJedis();
+		AssertHelper.notNull(jedis, "The Jedis Object is Not Null .");
+		try {
+			return jedis.lrange(key, start, end);
+		}
+		catch (Exception e) {
+			logger.error("Get range value from list Error:" + e);
+			throw new RedisClientException(e);
+		}
+		finally {
+			release(jedis);
+		}
+	}
+	
+	@Override
 	public long setnx(String key, String value, int expiredSeconds) {
 		AssertHelper.isTrue(expiredSeconds > 0,
 		        "The expiredSeconds is not less then 0 .");
@@ -266,7 +433,7 @@ public class JedisRedisClient implements RedisClient<Jedis> {
 			return result;
 		}
 		catch (Exception e) {
-			logger.error("Execute setnx in Redis Error:" + e);
+			logger.error("Execute setnx in Redis Error:", e);
 			throw new RedisClientException(e);
 		}
 		finally {
@@ -289,7 +456,7 @@ public class JedisRedisClient implements RedisClient<Jedis> {
 				redisMsgPubSubListenerMap.put(channel, redisMsgPubSubListener);
 			}
 			catch (Exception e) {
-				logger.error("The Redis subscribe Error:" + e);
+				logger.error("The Redis subscribe Error:", e);
 				throw new RedisClientException(e);
 			}
 			finally {
@@ -311,7 +478,7 @@ public class JedisRedisClient implements RedisClient<Jedis> {
 			jedis.publish(channel, message);
 		}
 		catch (Exception e) {
-			logger.error("The Redis publish message Error:" + e);
+			logger.error("The Redis publish message Error:", e);
 			throw new RedisClientException(e);
 		}
 		finally {
@@ -338,8 +505,9 @@ public class JedisRedisClient implements RedisClient<Jedis> {
 			jedis.close();
 		}
 		catch (Exception e) {
-			logger.error("Release jedis Error: " + e);
+			logger.error("Release jedis Error: ", e);
 			throw new RedisClientException(e);
 		}
 	}
+	
 }
