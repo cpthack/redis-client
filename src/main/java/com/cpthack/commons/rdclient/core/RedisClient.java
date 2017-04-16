@@ -15,13 +15,18 @@
  */
 package com.cpthack.commons.rdclient.core;
 
+import java.util.Map;
 import java.util.Set;
 
 import com.cpthack.commons.rdclient.config.RedisConfig;
 import com.cpthack.commons.rdclient.event.RedisListener;
 
 /**
- * <b>RedisClient.java</b></br> TODO(这里用一句话描述这个类的作用)</br>
+ * <b>RedisClient.java</b></br>
+ * 
+ * <pre>
+ * Redis操作类接口定义
+ * </pre>
  *
  * @author cpthack cpt@jianzhimao.com
  * @param <T>
@@ -142,6 +147,93 @@ public interface RedisClient<T> {
 	
 	/**
 	 * 
+	 * <b>Hash写操作</b> <br/>
+	 * <br/>
+	 * 
+	 * Set the respective fields to the respective values. HMSET replaces old values with new
+	 * values.
+	 * 
+	 * If key does not exist, a new key holding a hash is created. <br/>
+	 * 
+	 * @author cpthack cpt@jianzhimao.com
+	 * @param key
+	 * @param hashMap
+	 * @return boolean
+	 *
+	 */
+	boolean hmset(String key, Map<String, String> hashMap);
+	
+	/**
+	 * 
+	 * <b>Hash写操作</b> <br/>
+	 * <br/>
+	 * 
+	 * Set the respective fields to the respective values. HMSET replaces old values with new
+	 * values.
+	 * 
+	 * If key does not exist, a new key holding a hash is created. <br/>
+	 * 
+	 * @author cpthack cpt@jianzhimao.com
+	 * @param key
+	 * @param hashMap
+	 * @param expiredSeconds
+	 * @return boolean
+	 *
+	 */
+	boolean hmset(String key, Map<String, String> hashMap, int expiredSeconds);
+	
+	/**
+	 * 
+	 * <b>Hash读操作</b> <br/>
+	 * <br/>
+	 * 
+	 * Return all the fields and associated values in a hash.<br/>
+	 * 
+	 * @author cpthack cpt@jianzhimao.com
+	 * @param key
+	 * @return Map<String,String>
+	 *
+	 */
+	Map<String, String> hgetAll(String key);
+	
+	/**
+	 * 
+	 * <b>Hash写操作</b> <br/>
+	 * <br/>
+	 * 
+	 * Set the specified hash field to the specified value.
+	 * 
+	 * If key does not exist, a new key holding a hash is created. <br/>
+	 * 
+	 * @author cpthack cpt@jianzhimao.com
+	 * @param key
+	 * @param hashKey
+	 * @param hashValue
+	 * @return If the field already exists, and the HSET just produced an update of the value, 0 is
+	 *         returned, otherwise if a new field is created 1 is returned.
+	 *
+	 */
+	long hset(String key, String hashKey, String hashValue);
+	
+	/**
+	 * 
+	 * <b>Hash读操作</b> <br/>
+	 * <br/>
+	 * 
+	 * If key holds a hash, retrieve the value associated to the specified field.
+	 * 
+	 * If the field is not found or the key does not exist, a special 'nil' value is returned. <br/>
+	 * 
+	 * @author cpthack cpt@jianzhimao.com
+	 * @param key
+	 * @param hashKey
+	 * @return String
+	 *
+	 */
+	String hget(String key, String hashKey);
+	
+	/**
+	 * 
 	 * <b>setnx </b> <br/>
 	 * <br/>
 	 * 
@@ -153,10 +245,10 @@ public interface RedisClient<T> {
 	 * @author cpthack cpt@jianzhimao.com
 	 * @param key
 	 * @param value
-	 *            void
+	 * @return long
 	 *
 	 */
-	void setnx(String key, String value, int expiredSeconds);
+	long setnx(String key, String value, int expiredSeconds);
 	
 	/**
 	 * 

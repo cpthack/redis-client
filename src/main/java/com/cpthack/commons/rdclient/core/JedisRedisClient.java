@@ -126,7 +126,7 @@ public class JedisRedisClient implements RedisClient<Jedis> {
 	
 	@Override
 	public boolean set(String key, String value, int expiredSeconds) {
-		AssertHelper.isTrue(expiredSeconds <= 0,
+		AssertHelper.isTrue(expiredSeconds > 0,
 		        "The expiredSeconds is not less then 0 .");
 		Jedis jedis = getJedis();
 		AssertHelper.notNull(jedis, "The Jedis Object is Not Null .");
@@ -165,8 +165,96 @@ public class JedisRedisClient implements RedisClient<Jedis> {
 	}
 	
 	@Override
-	public void setnx(String key, String value, int expiredSeconds) {
-		AssertHelper.isTrue(expiredSeconds <= 0,
+	public boolean hmset(String key, Map<String, String> hashMap) {
+		Jedis jedis = getJedis();
+		AssertHelper.notNull(jedis, "The Jedis Object is Not Null .");
+		try {
+			key = jedis.hmset(key, hashMap);
+			return "OK".equalsIgnoreCase(key);
+		}
+		catch (Exception e) {
+			logger.error("Execute hmset in Redis Error:" + e);
+			throw new RedisClientException(e);
+		}
+		finally {
+			release(jedis);
+		}
+	}
+	
+	@Override
+	public boolean hmset(String key, Map<String, String> hashMap, int expiredSeconds) {
+		AssertHelper.isTrue(expiredSeconds > 0,
+		        "The expiredSeconds is not less then 0 .");
+		Jedis jedis = getJedis();
+		AssertHelper.notNull(jedis, "The Jedis Object is Not allow null .");
+		try {
+			Transaction ts = jedis.multi();
+			ts.hmset(key, hashMap);
+			ts.expire(key, expiredSeconds);
+			key = (String) ts.execGetResponse().get(0).get();// 提交事务并返回"ts.hmset(key, hashMap)"的执行结果
+			return "OK".equalsIgnoreCase(key);
+		}
+		catch (Exception e) {
+			logger.error("Execute hmset in Redis Error:", e);
+			throw new RedisClientException(e);
+		}
+		finally {
+			release(jedis);
+		}
+	}
+	
+	@Override
+	public Map<String, String> hgetAll(String key) {
+		Jedis jedis = getJedis();
+		AssertHelper.notNull(jedis, "The Jedis Object is Not Null .");
+		try {
+			return jedis.hgetAll(key);
+		}
+		catch (Exception e) {
+			logger.error("Get all value from hash Error:" + e);
+			throw new RedisClientException(e);
+		}
+		finally {
+			release(jedis);
+		}
+	}
+	
+	@Override
+	public long hset(String key, String hashKey, String hashValue) {
+		Jedis jedis = getJedis();
+		AssertHelper.notNull(jedis, "The Jedis Object is Not Null .");
+		try {
+			long result = jedis.hset(key, hashKey, hashValue);
+			return result;
+		}
+		catch (Exception e) {
+			logger.error("Write Hash Value To Redis Error:" + e);
+			throw new RedisClientException(e);
+		}
+		finally {
+			release(jedis);
+		}
+	}
+	
+	@Override
+	public String hget(String key, String hashKey) {
+		Jedis jedis = getJedis();
+		AssertHelper.notNull(jedis, "The Jedis Object is Not Null .");
+		try {
+			return jedis.hget(key, hashKey);
+		}
+		catch (Exception e) {
+			logger.error("Get value from Hash Error:" + e);
+			throw new RedisClientException(e);
+		}
+		finally {
+			release(jedis);
+		}
+	}
+	
+	@Override
+	public long setnx(String key, String value, int expiredSeconds) {
+		AssertHelper.isTrue(expiredSeconds > 0,
 		        "The expiredSeconds is not less then 0 .");
 		Jedis jedis = getJedis();
 		AssertHelper.notNull(jedis, "The Jedis Object is Not allow null .");
@@ -174,10 +262,11 @@ public class JedisRedisClient implements RedisClient<Jedis> {
 			Transaction ts = jedis.multi();
 			ts.setnx(key, value);
 			ts.expire(key, expiredSeconds);
-			ts.exec();
+			long result = (long) ts.execGetResponse().get(0).get();// 提交事务并返回"ts.setnx(key,value)"的执行结果
+			return result;
 		}
 		catch (Exception e) {
-			logger.error("Write String Value To Redis Error:" + e);
+			logger.error("Execute setnx in Redis Error:" + e);
 			throw new RedisClientException(e);
 		}
 		finally {
