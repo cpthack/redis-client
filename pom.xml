@@ -3,26 +3,81 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.github.cpthack.commons</groupId>
 	<artifactId>redis-client</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
+	<version>1.0</version>
+	<packaging>jar</packaging>
+	
+	<parent>
+		<groupId>org.sonatype.oss</groupId>
+		<artifactId>oss-parent</artifactId>
+		<version>7</version>
+	</parent>
+
+	<licenses>
+		<license>
+			<name>The Apache Software License, Version 2.0</name>
+			<url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+			<distribution>repo</distribution>
+		</license>
+	</licenses>
+	<scm>
+		<tag>master</tag>
+		<url>git@github.com:cpthack/redis-client.git</url>
+		<connection>scm:git:git@github.com:cpthack/redis-client.git</connection>
+		<developerConnection>scm:git:git@github.com:cpthack/redis-client.git</developerConnection>
+	</scm>
+	<organization>
+		<name>GitHub CPT</name>
+		<url>https://github.com/cpthack</url>
+	</organization>
+
+	<developers>
+		<developer>
+			<name>cpthack</name>
+			<organization>github</organization>
+			<email>1044559878@qq.com</email>
+			<organizationUrl>https://github.com/cpthack</organizationUrl>
+		</developer>
+	</developers>
+
+	<properties>
+
+		<maven-source-plugin.version>2.2.1</maven-source-plugin.version>
+		<maven-compiler-plugin.version>3.3</maven-compiler-plugin.version>
+		<maven.compiler.encoding>UTF-8</maven.compiler.encoding>
+		<maven.compile.source>1.7</maven.compile.source>
+		<maven.compile.target>1.7</maven.compile.target>
+
+		<junit.version>4.12</junit.version>
+		<log4j.version>1.2.17</log4j.version>
+		<slf4j-api.version>1.7.24</slf4j-api.version>
+		<slf4j-log4j12.version>1.7.21</slf4j-log4j12.version>
+
+	</properties>
 
 	<dependencies>
 		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>${junit.version}</version>
+			<scope>test</scope>
+		</dependency>
+
+		<dependency>
 			<groupId>log4j</groupId>
 			<artifactId>log4j</artifactId>
-			<version>1.2.17</version>
+			<version>${log4j.version}</version>
 		</dependency>
-		<!-- https://mvnrepository.com/artifact/org.slf4j/slf4j-api -->
 		<dependency>
 			<groupId>org.slf4j</groupId>
 			<artifactId>slf4j-api</artifactId>
-			<version>1.7.24</version>
+			<version>${slf4j-api.version}</version>
 		</dependency>
-		<!-- https://mvnrepository.com/artifact/org.slf4j/slf4j-log4j12 -->
 		<dependency>
 			<groupId>org.slf4j</groupId>
 			<artifactId>slf4j-log4j12</artifactId>
-			<version>1.7.21</version>
+			<version>${slf4j-log4j12.version}</version>
 		</dependency>
+
 		<dependency>
 			<groupId>org.apache.commons</groupId>
 			<artifactId>commons-lang3</artifactId>
@@ -40,13 +95,74 @@
 
 	<build>
 		<plugins>
+
 			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
+				<version>${maven-compiler-plugin.version}</version>
 				<configuration>
-					<source>1.7</source>
-					<target>1.7</target>
+					<source>${maven.compile.source}</source>
+					<target>${maven.compile.target}</target>
+					<encoding>${maven.compile.encoding}</encoding>
+					<excludes>
+						<exclude>**/package-info.java</exclude>
+					</excludes>
 				</configuration>
 			</plugin>
+
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-source-plugin</artifactId>
+				<version>${maven-source-plugin.version}</version>
+				<executions>
+					<execution>
+						<id>attach-sources</id>
+						<goals>
+							<goal>jar</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-javadoc-plugin</artifactId>
+				<version>2.9.1</version>
+				<configuration>
+					<show>private</show>
+					<nohelp>true</nohelp>
+					<aggregate>true</aggregate>
+					<charset>UTF-8</charset>
+					<encoding>UTF-8</encoding>
+					<docencoding>UTF-8</docencoding>
+					<javadocExecutable>${java.home}/../bin/javadoc</javadocExecutable>
+				</configuration>
+				<executions>
+					<execution>
+						<phase>package</phase>
+						<goals>
+							<goal>javadoc</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-gpg-plugin</artifactId>
+				<version>1.1</version>
+				<configuration>
+				<skip>true</skip>
+				</configuration>
+				<executions>
+					<execution>
+						<id>sign-artifacts</id>
+						<phase>verify</phase>
+						<goals>
+							<goal>sign</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+
 		</plugins>
 	</build>
 

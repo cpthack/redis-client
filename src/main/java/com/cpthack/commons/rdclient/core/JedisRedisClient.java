@@ -23,9 +23,6 @@ import java.util.concurrent.ConcurrentHashMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import redis.clients.jedis.Jedis;
-import redis.clients.jedis.Transaction;
-
 import com.cpthack.commons.rdclient.config.RedisConfig;
 import com.cpthack.commons.rdclient.constants.RedisConstants;
 import com.cpthack.commons.rdclient.event.RedisListener;
@@ -34,12 +31,15 @@ import com.cpthack.commons.rdclient.exception.AssertHelper;
 import com.cpthack.commons.rdclient.exception.RedisClientException;
 import com.cpthack.commons.rdclient.queue.IAtom;
 
+import redis.clients.jedis.Jedis;
+import redis.clients.jedis.Transaction;
+
 /**
  * 
  * <b>JedisRedisClient.java</b></br>
  * 
  * <pre>
- * TODO(这里用一句话描述这个类的作用)
+ * 基于jedis第三方依赖库实现RedisClient接口
  * </pre>
  *
  * @author cpthack cpt@jianzhimao.com
@@ -48,10 +48,9 @@ import com.cpthack.commons.rdclient.queue.IAtom;
  */
 public class JedisRedisClient implements RedisClient<Jedis> {
 	
-	private static Logger                             logger                    = LoggerFactory
-	                                                                                    .getLogger(JedisRedisClient.class);
-	private RedisConfig                               redisConfig               = null;
-	private final Map<String, RedisMsgPubSubListener> redisMsgPubSubListenerMap = new ConcurrentHashMap<String, RedisMsgPubSubListener>();
+	private static Logger							  logger					= LoggerFactory.getLogger(JedisRedisClient.class);
+	private RedisConfig								  redisConfig				= null;
+	private final Map<String, RedisMsgPubSubListener> redisMsgPubSubListenerMap	= new ConcurrentHashMap<String, RedisMsgPubSubListener>();
 	
 	@Override
 	public RedisClient<Jedis> setRedisConfig(RedisConfig redisConfig) {
@@ -129,8 +128,7 @@ public class JedisRedisClient implements RedisClient<Jedis> {
 	
 	@Override
 	public boolean set(String key, String value, int expiredSeconds) {
-		AssertHelper.isTrue(expiredSeconds > 0,
-		        "The expiredSeconds is not less then 0 .");
+		AssertHelper.isTrue(expiredSeconds > 0, "The expiredSeconds is not less then 0 .");
 		Jedis jedis = getJedis();
 		AssertHelper.notNull(jedis, "The Jedis Object is Not Null .");
 		try {
@@ -186,8 +184,7 @@ public class JedisRedisClient implements RedisClient<Jedis> {
 	
 	@Override
 	public boolean hmset(String key, Map<String, String> hashMap, int expiredSeconds) {
-		AssertHelper.isTrue(expiredSeconds > 0,
-		        "The expiredSeconds is not less then 0 .");
+		AssertHelper.isTrue(expiredSeconds > 0, "The expiredSeconds is not less then 0 .");
 		Jedis jedis = getJedis();
 		AssertHelper.notNull(jedis, "The Jedis Object is Not allow null .");
 		try {
@@ -274,15 +271,14 @@ public class JedisRedisClient implements RedisClient<Jedis> {
 	
 	@Override
 	public boolean lpush(String key, int expiredSeconds, String... values) {
-		AssertHelper.isTrue(expiredSeconds > 0,
-		        "The expiredSeconds is not less then 0 .");
+		AssertHelper.isTrue(expiredSeconds > 0, "The expiredSeconds is not less then 0 .");
 		Jedis jedis = getJedis();
 		AssertHelper.notNull(jedis, "The Jedis Object is Not allow null .");
 		try {
 			Transaction ts = jedis.multi();
 			ts.lpush(key, values);
 			ts.expire(key, expiredSeconds);
-			long result = (long) ts.execGetResponse().get(0).get();// 提交事务并返回"ts.setnx(key,value)"的执行结果
+			long result = Long.parseLong(String.valueOf(ts.execGetResponse().get(0).get()));// 提交事务并返回"ts.setnx(key,value)"的执行结果
 			return result > 0;
 		}
 		catch (Exception e) {
@@ -313,15 +309,15 @@ public class JedisRedisClient implements RedisClient<Jedis> {
 	
 	@Override
 	public boolean rpush(String key, int expiredSeconds, String... values) {
-		AssertHelper.isTrue(expiredSeconds > 0,
-		        "The expiredSeconds is not less then 0 .");
+		AssertHelper.isTrue(expiredSeconds > 0, "The expiredSeconds is not less then 0 .");
 		Jedis jedis = getJedis();
 		AssertHelper.notNull(jedis, "The Jedis Object is Not allow null .");
 		try {
 			Transaction ts = jedis.multi();
 			ts.rpush(key, values);
 			ts.expire(key, expiredSeconds);
-			long result = (long) ts.execGetResponse().get(0).get();// 提交事务并返回"ts.setnx(key,value)"的执行结果
+			// 提交事务并返回"ts.setnx(key,value)"的执行结果
+			long result = Long.parseLong(String.valueOf(ts.execGetResponse().get(0).get()));
 			return result > 0;
 		}
 		catch (Exception e) {
@@ -374,7 +370,7 @@ public class JedisRedisClient implements RedisClient<Jedis> {
 		
 		try {
 			
-			// 事务1，从临时队列中取出数据消费
+			// 事务1，从临时队列中去除消费数据并继续存回队列中
 			Transaction ts = jedis.multi();
 			ts.rpoplpush(dstkey, dstkey);
 			String result = (String) ts.execGetResponse().get(0).get();
@@ -421,15 +417,14 @@ public class JedisRedisClient implements RedisClient<Jedis> {
 	
 	@Override
 	public long setnx(String key, String value, int expiredSeconds) {
-		AssertHelper.isTrue(expiredSeconds > 0,
-		        "The expiredSeconds is not less then 0 .");
+		AssertHelper.isTrue(expiredSeconds > 0, "The expiredSeconds is not less then 0 .");
 		Jedis jedis = getJedis();
 		AssertHelper.notNull(jedis, "The Jedis Object is Not allow null .");
 		try {
 			Transaction ts = jedis.multi();
 			ts.setnx(key, value);
 			ts.expire(key, expiredSeconds);
-			long result = (long) ts.execGetResponse().get(0).get();// 提交事务并返回"ts.setnx(key,value)"的执行结果
+			long result = Long.parseLong(String.valueOf(ts.execGetResponse().get(0).get()));// 提交事务并返回"ts.setnx(key,value)"的执行结果
 			return result;
 		}
 		catch (Exception e) {
