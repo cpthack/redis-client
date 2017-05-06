@@ -370,7 +370,7 @@ public class JedisRedisClient implements RedisClient<Jedis> {
 		
 		try {
 			
-			// 事务1，从临时队列中去除消费数据并继续存回队列中
+			// 事务1，从临时队列中消费数据并继续存回队列中
 			Transaction ts = jedis.multi();
 			ts.rpoplpush(dstkey, dstkey);
 			String result = (String) ts.execGetResponse().get(0).get();
