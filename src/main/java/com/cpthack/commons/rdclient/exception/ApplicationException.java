@@ -5,7 +5,7 @@ package com.cpthack.commons.rdclient.exception;
  * <b>ApplicationException.java</b></br>
  * 
  * <pre>
- * TODO(这里用一句话描述这个类的作用)
+ * 异常类
  * </pre>
  *
  * @author cpthack cpt@jianzhimao.com
@@ -16,9 +16,9 @@ public class ApplicationException extends RuntimeException {
 	
 	private static final long serialVersionUID = -9084561727097703075L;
 	
-	protected String          code;
+	protected String		  code;
 	
-	protected String          message;
+	protected String		  message;
 	
 	public ApplicationException() {
 		super();

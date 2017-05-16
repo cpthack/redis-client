@@ -16,22 +16,27 @@
 package com.cpthack.commons.rdclient.exception;
 
 /**
- * <b>RedisClientException.java</b></br> TODO(这里用一句话描述这个类的作用)</br>
+ * 
+ * <b>RedisClientException.java</b></br>
+ * 
+ * <pre>
+ * RedisClient的自定义异常类
+ * </pre>
  *
  * @author cpthack cpt@jianzhimao.com
- * @date 2017年4月13日 下午8:36:23
+ * @date May 16, 2017 3:46:56 PM
  * @since JDK 1.7
  */
 public class RedisClientException extends ApplicationException {
-
+	
 	private static final long serialVersionUID = -873631143382257801L;
-
+	
 	public RedisClientException(Throwable t) {
 		super(t);
 	}
-
+	
 	public RedisClientException(String message) {
 		super(message);
 	}
-
+	
 }

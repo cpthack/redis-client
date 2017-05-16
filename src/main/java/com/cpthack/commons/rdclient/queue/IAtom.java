@@ -19,7 +19,7 @@ package com.cpthack.commons.rdclient.queue;
  * <b>IAtom.java</b></br>
  * 
  * <pre>
- * TODO(这里用一句话描述这个类的作用)
+ * 具有事务性的队列操作接口类
  * </pre>
  *
  * @author cpthack cpt@jianzhimao.com

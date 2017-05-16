@@ -19,7 +19,7 @@ package com.cpthack.commons.rdclient.event;
  * <b>RedisListener.java</b></br>
  * 
  * <pre>
- * TODO(这里用一句话描述这个类的作用)
+ * 自定义的发布订阅接口类
  * </pre>
  *
  * @author cpthack cpt@jianzhimao.com

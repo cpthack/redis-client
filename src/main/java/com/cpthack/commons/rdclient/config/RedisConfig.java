@@ -21,7 +21,7 @@ import com.cpthack.commons.rdclient.constants.RedisConstants;
  * <b>RedisConfig.java</b></br>
  * 
  * <pre>
- * TODO(这里用一句话描述这个类的作用)
+ * RedisClient默认配置类，当调用者没有指定自定义的RedisConfig类时，则会自动加载使用该默认配置
  * </pre>
  *
  * @author cpthack cpt@jianzhimao.com
@@ -30,14 +30,14 @@ import com.cpthack.commons.rdclient.constants.RedisConstants;
  */
 public class RedisConfig extends AbstractConfig {
 	
-	private final String FILE_NAME                = RedisConstants.DEFALUT_REDIS_FILE_NAME;
+	private final String FILE_NAME				  = RedisConstants.DEFALUT_REDIS_FILE_NAME;
 	
-	private final String CONFIG_NAME_SERVER_IP    = "redis.server.ip";
+	private final String CONFIG_NAME_SERVER_IP	  = "redis.server.ip";
 	private final String CONFIG_NAME_SERVER_PORT  = "redis.server.port";
-	private final String CONFIG_NAME_SERVER_PWD   = "redis.server.password";
+	private final String CONFIG_NAME_SERVER_PWD	  = "redis.server.password";
 	
-	private final String CONFIG_NAME_POOL_MAX     = "redis.client.pool.max";
-	private final String CONFIG_NAME_POOL_IDLE    = "redis.client.pool.idle";
+	private final String CONFIG_NAME_POOL_MAX	  = "redis.client.pool.max";
+	private final String CONFIG_NAME_POOL_IDLE	  = "redis.client.pool.idle";
 	private final String CONFIG_NAME_TESTONBORROW = "redis.client.pool.TestOnBorrow";
 	private final String CONFIG_NAME_TRY_TIMEOUT  = "redis.client.pool.try.timeout";
 	

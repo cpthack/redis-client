@@ -18,10 +18,15 @@ package com.cpthack.commons.rdclient.exception;
 import org.apache.commons.lang3.StringUtils;
 
 /**
- * <b>AssertHelper.java</b></br> TODO(这里用一句话描述这个类的作用)</br>
+ * 
+ * <b>AssertHelper.java</b></br>
+ * 
+ * <pre>
+ * 断言工具类
+ * </pre>
  *
  * @author cpthack cpt@jianzhimao.com
- * @date 2017年4月14日 下午3:32:48
+ * @date May 16, 2017 3:46:27 PM
  * @since JDK 1.7
  */
 public class AssertHelper {
@@ -48,8 +53,8 @@ public class AssertHelper {
 	 * 
 	 * <b>notBlank </b> <br/>
 	 * 
-	 * if a CharSequence is whitespace, empty ("") or null Then
-	 * "throw new RedisClientException(message)".<br/>
+	 * if a CharSequence is whitespace, empty ("") or null Then "throw new
+	 * RedisClientException(message)".<br/>
 	 * 
 	 * <pre>
 	 * AssertHelper.notBlank(null)      = throw new RedisClientException(message)
