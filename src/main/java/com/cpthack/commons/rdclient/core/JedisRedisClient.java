@@ -404,6 +404,7 @@ public class JedisRedisClient implements RedisClient<Jedis> {
 		Jedis jedis = getJedis();
 		AssertHelper.notNull(jedis, "The Jedis Object is Not Null .");
 		try {
+			jedis.incr(key);
 			return jedis.lrange(key, start, end);
 		}
 		catch (Exception e) {
@@ -481,6 +482,23 @@ public class JedisRedisClient implements RedisClient<Jedis> {
 		}
 	}
 	
+	
+	@Override
+	public long incr(String key) {
+		Jedis jedis = getJedis();
+		AssertHelper.notNull(jedis, "The Jedis Object is Not Null .");
+		try {
+			return jedis.incr(key);
+		}
+		catch (Exception e) {
+			logger.error("The Redis incr {} Error:",key, e);
+			throw new RedisClientException(e);
+		}
+		finally {
+			release(jedis);
+		}
+	}
+
 	/**
 	 * 
 	 * <b>release </b> <br/>

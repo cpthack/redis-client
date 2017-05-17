@@ -138,7 +138,8 @@ public interface RedisClient<T> {
 	 * <br/>
 	 * 
 	 * Get the value of the specified key. If the key does not exist null is returned. If the value
-	 * stored at key is not a string an error is returned because GET can only handle string values. <br/>
+	 * stored at key is not a string an error is returned because GET can only handle string values.
+	 * <br/>
 	 * 
 	 * @author cpthack cpt@jianzhimao.com
 	 * @param key
@@ -333,7 +334,8 @@ public interface RedisClient<T> {
 	 * "a","b". <br/>
 	 * <br/>
 	 * 
-	 * If the key does not exist or the list is already empty the special value 'nil' is returned. <br/>
+	 * If the key does not exist or the list is already empty the special value 'nil' is returned.
+	 * <br/>
 	 * 
 	 * @author cpthack cpt@jianzhimao.com
 	 * @param key
@@ -427,4 +429,23 @@ public interface RedisClient<T> {
 	 *
 	 */
 	void publish(String channel, String message);
+	
+	/**
+	 * 
+	 * <b>incr</b> <br/>
+	 * <br/>
+	 * 
+	 * Increment the number stored at key by one. If the key does not exist or contains a value of a
+	 * wrong type, set the key to the value of "0" before to perform the increment operation.
+	 * 
+	 * <br/>
+	 * 
+	 * @author cpthack cpt@jianzhimao.com
+	 * @param key
+	 * @return Integer reply, this commands will reply with the new value of key after the
+	 *         increment.
+	 *
+	 */
+	long incr(String key);
+	
 }
