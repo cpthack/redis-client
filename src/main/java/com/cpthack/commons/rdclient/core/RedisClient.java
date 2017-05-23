@@ -448,4 +448,22 @@ public interface RedisClient<T> {
 	 */
 	long incr(String key);
 	
+	/**
+	 * 
+	 * <b>decr</b> <br/>
+	 * <br/>
+	 * 
+	 * Decrement the number stored at key by one. If the key does not exist or contains a value of a
+	 * wrong type, set the key to the value of "0" before to perform the decrement operation.
+	 * 
+	 * <br/>
+	 * 
+	 * @author cpthack cpt@jianzhimao.com
+	 * @param key
+	 * @return Integer reply, this commands will reply with the new value of key after the
+	 *         increment.
+	 * 
+	 */
+	long decr(String key);
+	
 }

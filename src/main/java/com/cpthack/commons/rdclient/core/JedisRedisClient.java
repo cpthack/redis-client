@@ -422,9 +422,10 @@ public class JedisRedisClient implements RedisClient<Jedis> {
 		Jedis jedis = getJedis();
 		AssertHelper.notNull(jedis, "The Jedis Object is Not allow null .");
 		try {
+			int oldExpireSeconds = Integer.parseInt(jedis.ttl(key).toString());
 			Transaction ts = jedis.multi();
 			ts.setnx(key, value);
-			ts.expire(key, expiredSeconds);
+			ts.expire(key, oldExpireSeconds > 0 ? oldExpireSeconds : expiredSeconds);
 			long result = Long.parseLong(String.valueOf(ts.execGetResponse().get(0).get()));// 提交事务并返回"ts.setnx(key,value)"的执行结果
 			return result;
 		}
@@ -482,7 +483,6 @@ public class JedisRedisClient implements RedisClient<Jedis> {
 		}
 	}
 	
-	
 	@Override
 	public long incr(String key) {
 		Jedis jedis = getJedis();
@@ -491,14 +491,30 @@ public class JedisRedisClient implements RedisClient<Jedis> {
 			return jedis.incr(key);
 		}
 		catch (Exception e) {
-			logger.error("The Redis incr {} Error:",key, e);
+			logger.error("The Redis incr {} Error:", key, e);
 			throw new RedisClientException(e);
 		}
 		finally {
 			release(jedis);
 		}
 	}
-
+	
+	@Override
+	public long decr(String key) {
+		Jedis jedis = getJedis();
+		AssertHelper.notNull(jedis, "The Jedis Object is Not Null .");
+		try {
+			return jedis.decr(key);
+		}
+		catch (Exception e) {
+			logger.error("The Redis decr {} Error:", key, e);
+			throw new RedisClientException(e);
+		}
+		finally {
+			release(jedis);
+		}
+	}
+	
 	/**
 	 * 
 	 * <b>release </b> <br/>
